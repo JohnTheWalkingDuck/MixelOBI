@@ -120,7 +120,7 @@
 
         <div>
             <div class="panel panel-admin" id="xxlAdminPanel">
-                <div class="panel-title" style="color:var(--admin-color)">👑 OBI ULTRA-KONTROLLZENTRUM v4.1 (ADMINISTRATOR)</div>
+                <div class="panel-title" style="color:var(--admin-color)">👑 OBI ULTRA-KONTROLLZENTRUM v4.2 (ADMINISTRATOR)</div>
                 
                 <div class="metrics-grid">
                     <div class="metric-card"><span>Umsatz Gesamt</span><strong id="statUmsatz" style="color:var(--success)">0 M.</strong></div>
@@ -168,7 +168,7 @@
                 </div>
 
                 <div class="admin-box" style="border-left: 5px solid var(--discord-blurple);">
-                    <strong style="color:var(--discord-blurple)">💬 Discord Leitstelle (Nur für dich sichtbar)</strong>
+                    <strong style="color:var(--discord-blurple)">💬 Discord Leitstelle (Für Kunden komplett unsichtbar)</strong>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:10px;">
                         <div>
                             <label style="font-size:11px; font-weight:bold; color:#555;">Strato-Leitung (Webhook URL):</label>
@@ -183,7 +183,7 @@
 
                 <strong>📜 System-Log & Kassenabrechnung:</strong>
                 <div class="log-box" id="adminSystemLog" style="margin-top:5px; margin-bottom:15px;">
-                    [SYSTEM] OBI v4.1 erfolgreich initialisiert. Discord-Sicherheitsbrücke aktiv.
+                    [SYSTEM] OBI v4.2 erfolgreich initialisiert. Discord-Sicherheitsbrücke aktiv.
                 </div>
 
                 <div style="display:flex; gap:10px;">
@@ -401,6 +401,8 @@
         function processOrderCheckout() {
             let name = document.getElementById('playerName').value.trim();
             let time = document.getElementById('deliveryTime').value.trim();
+            
+            // Holt sich die Daten jetzt EXKLUSIV aus den geschützten Admin-Feldern
             let url = document.getElementById('discWebhook').value.trim();
             let mentionId = document.getElementById('discMentionId').value.trim();
 
@@ -425,12 +427,12 @@
                         { name: "💰 Gesamt-Rechnungsbetrag", value: `### 💵 ${sum.toLocaleString('de-DE')} Münzen`, inline: false },
                         { name: "🛠️ Status für Mitarbeiter", value: "⬜ Packliste kontrolliert\n⬜ Kisten auf Plot bereitgestellt\n⬜ Übergabe Ingame abgeschlossen", inline: false }
                     ],
-                    footer: { text: "MixelObi.de Automatisches Logistik-System v4.1", icon_url: "https://i.imgur.com/wHddv9B.png" },
+                    footer: { text: "MixelObi.de Automatisches Logistik-System v4.2", icon_url: "https://i.imgur.com/wHddv9B.png" },
                     timestamp: new Date()
                 }]
             };
 
-            if(url.startsWith("https://discord.com/api/webhooks/")) {
+            if(url && url.startsWith("https://discord.com/api/webhooks/")) {
                 fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) })
                 .then(() => {
                     playAlertSound();
@@ -447,7 +449,7 @@
                     alert("🚀 Giga-Erfolg! Bestellung an Discord übermittelt!");
                 });
             } else {
-                alert(`Simulation aktiv (Kein Webhook eingetragen): ${name} kauft für ${sum} M.`);
+                alert(`Simulation aktiv (Kein Webhook im Adminbereich hinterlegt): ${name} kauft für ${sum} M.`);
                 totalRevenue += sum;
                 saveToStorage();
                 shoppingCart = [];
@@ -540,6 +542,7 @@
             drawUI();
         };
 
+        // Speichert Änderungen nur noch direkt über die geschützten Admin-Felder ab
         document.getElementById('discWebhook').addEventListener('input', (e) => localStorage.setItem('obi_v4_webhook', e.target.value.trim()));
         document.getElementById('discMentionId').addEventListener('input', (e) => localStorage.setItem('obi_v4_mention', e.target.value.trim()));
     </script>
