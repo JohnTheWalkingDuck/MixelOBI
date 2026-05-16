@@ -38,7 +38,6 @@
 
         .panel { background: var(--obi-card-bg); border-radius: 10px; padding: 22px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); margin-bottom: 25px; border-top: 5px solid #ccc; position: relative; }
         .panel-orange { border-top-color: var(--obi-orange); }
-        .panel-discord { border-top-color: var(--discord-blurple); }
         .panel-admin { border-top-color: var(--admin-color); background: #F8F9FA; display: none; }
         .panel-title { font-size: 18px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; color: #111; border-bottom: 1px solid #eee; padding-bottom: 8px; }
 
@@ -89,7 +88,6 @@
 </head>
 <body>
 
-    <!-- LIVE ON/OFF BANNER -->
     <div id="liveStatusBanner" class="status-banner online">🟢 OBI MEGASTORE GEÖFFNET – Online-Bestellungen aktiv!</div>
 
     <header>
@@ -105,7 +103,6 @@
 
     <div class="giga-wrapper">
         
-        <!-- LINKS: ABTEILUNGEN -->
         <div class="sidebar-left">
             <div class="panel panel-orange">
                 <div class="panel-title">🗂️ Abteilungen</div>
@@ -121,13 +118,10 @@
             </div>
         </div>
 
-        <!-- MITTE: PRODUKTE & RIESIGES ADMIN PANEL -->
         <div>
-            <!-- ERWEITERTES GIGA-ADMIN-PANEL -->
             <div class="panel panel-admin" id="xxlAdminPanel">
-                <div class="panel-title" style="color:var(--admin-color)">👑 OBI ULTRA-KONTROLLZENTRUM v4 (ADMINISTRATOR)</div>
+                <div class="panel-title" style="color:var(--admin-color)">👑 OBI ULTRA-KONTROLLZENTRUM v4.1 (ADMINISTRATOR)</div>
                 
-                <!-- LIVE STATISTIKEN -->
                 <div class="metrics-grid">
                     <div class="metric-card"><span>Umsatz Gesamt</span><strong id="statUmsatz" style="color:var(--success)">0 M.</strong></div>
                     <div class="metric-card"><span>Gelistete Items</span><strong id="statItems">0</strong></div>
@@ -136,7 +130,6 @@
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
-                    <!-- STATUS & GLOBALE AKTIONEN -->
                     <div class="admin-box">
                         <strong>🟢/🔴 Markt-Status & Events:</strong>
                         <div style="display:flex; gap:10px; margin-top:10px; margin-bottom:10px;">
@@ -152,7 +145,6 @@
                         </select>
                     </div>
 
-                    <!-- NEUES ITEM HINZUFÜGEN -->
                     <div class="admin-box">
                         <strong>➕ Neues Item / Möbelstück ins System einspeisen:</strong>
                         <div style="margin-top:10px;">
@@ -169,30 +161,40 @@
                                 <input type="number" id="addPrice" placeholder="Verkauf (M.)">
                                 <input type="number" id="addStock" placeholder="Lagerbestand">
                             </div>
-                            <input type="text" id="addUnit" placeholder="Einheit (z.B. Stk, Stack, Kiste)" value="Stk">
+                            <input type="text" id="addUnit" placeholder="Einheit (z.B. Stk, Stack)" value="Stk">
                             <button class="btn btn-orange" onclick="addNewItemToDatabase()">Item live schalten</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-box" style="border-left: 5px solid var(--discord-blurple);">
+                    <strong style="color:var(--discord-blurple)">💬 Discord Leitstelle (Nur für dich sichtbar)</strong>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-top:10px;">
+                        <div>
+                            <label style="font-size:11px; font-weight:bold; color:#555;">Strato-Leitung (Webhook URL):</label>
+                            <input type="text" id="discWebhook" placeholder="https://discord.com/api/webhooks/..." style="padding:10px; font-size:12px; border:1px solid #ccc; border-radius:6px; width:100%;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:bold; color:#555;">🎯 Discord-Rolle zum Anpingen:</label>
+                            <input type="text" id="discMentionId" placeholder="Rollen-ID (z.B. 884729104829104)" style="padding:10px; font-size:12px; border:1px solid #ccc; border-radius:6px; width:100%;">
                         </div>
                     </div>
                 </div>
 
                 <strong>📜 System-Log & Kassenabrechnung:</strong>
                 <div class="log-box" id="adminSystemLog" style="margin-top:5px; margin-bottom:15px;">
-                    [SYSTEM] OBI v4 erfolgreich initialisiert. Datenbank leer und einsatzbereit.
+                    [SYSTEM] OBI v4.1 erfolgreich initialisiert. Discord-Sicherheitsbrücke aktiv.
                 </div>
 
                 <div style="display:flex; gap:10px;">
                     <button class="btn btn-danger" style="padding:6px; font-size:11px;" onclick="wipeDatabase()">🚨 Komplette Datenbank löschen</button>
-                    <button class="btn btn-admin" style="padding:6px; font-size:11px;" onclick="loadDemoItems()">📦 Test-Möbel zum Ausprobieren laden</button>
+                    <button class="btn btn-admin" style="padding:6px; font-size:11px;" onclick="loadDemoItems()">📦 Test-Möbel laden</button>
                 </div>
             </div>
 
-            <!-- PRODUKT ANZEIGE -->
-            <div class="grid-container" id="megaProductGrid">
-                <!-- Wird dynamisch per JS aufgebaut -->
-            </div>
+            <div class="grid-container" id="megaProductGrid"></div>
         </div>
 
-        <!-- RECHTS: WARENKORB & INTELLIGENTER RECHNUNGSDRUCKER -->
         <div class="sidebar-right">
             <div class="panel panel-orange">
                 <div class="panel-title">🛒 OBI Warenkorb</div>
@@ -207,21 +209,10 @@
                     <input type="text" id="deliveryTime" placeholder="Wann erfolgt die Abholung?" style="width:100%; padding:10px; margin-bottom:12px; border:1px solid #ccc; border-radius:6px;">
                     <button class="btn btn-orange" id="checkoutBtn" onclick="processOrderCheckout()">🚀 Reservierung abschicken</button>
                     
-                    <!-- INGAME RECHNUNGS-DRUCKER -->
                     <div class="copy-cmd-box" id="ingameInvoiceBox" onclick="copyInvoiceToClipboard()">
                         Klicke hier, um den Ingame-Rechnungsbefehl zu kopieren!
                     </div>
                 </div>
-            </div>
-
-            <!-- DISCORD WEBHOOK PANEL -->
-            <div class="panel panel-discord">
-                <div class="panel-title" style="color:var(--discord-blurple)">💬 Advanced Discord Leitstelle</div>
-                <label style="font-size:11px; font-weight:bold; color:#555;">Strato-Leitung (Webhook URL):</label>
-                <input type="text" id="discWebhook" placeholder="https://discord.com/api/webhooks/..." style="width:100%; padding:10px; font-size:12px; margin-bottom:10px; border:1px solid #ccc; border-radius:6px;">
-                <label style="font-size:11px; font-weight:bold; color:#555;">🎯 Discord-Rolle zum Anpingen:</label>
-                <input type="text" id="discMentionId" placeholder="Rollen-ID (z.B. 884729104829104)" style="width:100%; padding:10px; font-size:12px; border:1px solid #ccc; border-radius:6px;">
-                <span style="font-size:10px; color:#666; margin-top:4px; display:block;">Pingt deine Mitarbeiter auf Discord bei jeder neuen Web-Bestellung an!</span>
             </div>
         </div>
     </div>
@@ -244,7 +235,6 @@
         }
 
         function drawUI() {
-            // Update Open/Closed Banner
             let banner = document.getElementById('liveStatusBanner');
             let checkoutBtn = document.getElementById('checkoutBtn');
             if(isMarketOpen) {
@@ -261,7 +251,7 @@
             grid.innerHTML = '';
 
             if(itemDatabase.length === 0) {
-                grid.innerHTML = `<div class="empty-notice"><h3>Dein OBI-System ist noch komplett leer!</h3><p>Logge dich oben rechts bei der "Marktleitung" ein, um deine ersten Blöcke, Möbel oder Sanitäranlagen hinzuzufügen.</p></div>`;
+                grid.innerHTML = `<div class="empty-notice"><h3>Dein OBI-System ist noch komplett leer!</h3><p>Logge dich oben rechts bei der "Marktleitung" ein, um deine ersten Items hinzuzufügen.</p></div>`;
             } else {
                 let displayed = 0;
                 itemDatabase.forEach(item => {
@@ -291,7 +281,7 @@
                             </div>
 
                             <div class="input-group">
-                                <input type="number" id="qty-${item.id}" value="1" min="1" style="font-weight:bold;">
+                                <input type="number" id="qty-${item.id}" value="1" min="1">
                                 <button class="btn btn-orange" style="padding:8px; font-size:11px; margin-left:auto; width:auto;" onclick="pushToBasket(${item.id})">🛒 Korb</button>
                                 ${isChefMode ? `<button class="btn btn-danger" style="padding:8px; font-size:11px; width:auto; margin-left:5px;" onclick="deleteItem(${item.id})">🗑️</button>` : ''}
                             </div>
@@ -307,14 +297,12 @@
             if (isChefMode) showAdminControls();
         }
 
-        // METRICS UPDATE
         function updateMetrics() {
             document.getElementById('statUmsatz').innerText = `${totalRevenue.toLocaleString('de-DE')} M.`;
             document.getElementById('statItems').innerText = itemDatabase.length;
             document.getElementById('statKorb').innerText = shoppingCart.length;
             document.getElementById('statRabatt').innerText = globalDiscount < 1 ? `${Math.round((1 - globalDiscount) * 100)}% Aktiv` : "Keiner";
             
-            // Abteilungscounter
             document.getElementById('cnt-all').innerText = itemDatabase.length;
             document.getElementById('cnt-baublock').innerText = itemDatabase.filter(x=>x.cat==='baublock').length;
             document.getElementById('cnt-wertstoff').innerText = itemDatabase.filter(x=>x.cat==='wertstoff').length;
@@ -324,7 +312,6 @@
             document.getElementById('cnt-werkzeug').innerText = itemDatabase.filter(x=>x.cat==='werkzeug').length;
         }
 
-        // HINZUFÜGEN VON GEGENSTÄNDEN
         function addNewItemToDatabase() {
             let name = document.getElementById('addName').value.trim();
             let cat = document.getElementById('addCat').value;
@@ -374,7 +361,6 @@
             drawUI();
         }
 
-        // WARENKORB & ABRECHNUNG
         function pushToBasket(id) {
             if(!isMarketOpen) { alert("Der Shop ist zu!"); return; }
             let item = itemDatabase.find(x => x.id === id);
@@ -412,7 +398,6 @@
             updateMetrics();
         }
 
-        // HIGH-END DISCORD WEBHOOK DESIGN (DEIN WUNSCH)
         function processOrderCheckout() {
             let name = document.getElementById('playerName').value.trim();
             let time = document.getElementById('deliveryTime').value.trim();
@@ -422,21 +407,17 @@
             if(!name || !time) { alert("Bitte trag deinen Namen und die Uhrzeit ein!"); return; }
 
             let sum = shoppingCart.reduce((acc, c) => acc + (c.price * c.qty), 0);
-            
-            // Erstellt eine schöne, saubere Liste für Discord
             let materialList = shoppingCart.map(c => `📦 \`${c.qty}x\` **${c.name}**\n┗ Einzelpreis: ${c.price} M. → **Gesamt: ${c.price * c.qty} M.**`).join('\n\n');
-            
             let mentionString = mentionId ? `📢 <@&${mentionId}> **EINE NEUE WAREN-RESERVIERUNG IST EINGEGANGEN!**` : "";
 
-            // DAS PROFISSIONELLE EDEL-EMBED DESIGN
             let payload = {
                 content: mentionString, 
                 username: "OBI Logistik-Zentrale",
-                avatar_url: "https://i.imgur.com/wHddv9B.png", // Professionelles Icon
+                avatar_url: "https://i.imgur.com/wHddv9B.png",
                 embeds: [{
                     title: "🛒 NEUER EINKAUFSAUFTRAG - MixelObi.de",
                     description: "Ein Kunde hat soeben Materialien oder Design-Möbel über das Web-Portal reserviert.",
-                    color: 16738304, // Echtes OBI Orange
+                    color: 16738304,
                     fields: [
                         { name: "👷 Handwerker / Kunde", value: `\`\`\`\n${name}\n\`\`\``, inline: true },
                         { name: "⏰ Geplante Abholzeit", value: `\`\`\`\n${time}\n\`\`\``, inline: true },
@@ -444,7 +425,7 @@
                         { name: "💰 Gesamt-Rechnungsbetrag", value: `### 💵 ${sum.toLocaleString('de-DE')} Münzen`, inline: false },
                         { name: "🛠️ Status für Mitarbeiter", value: "⬜ Packliste kontrolliert\n⬜ Kisten auf Plot bereitgestellt\n⬜ Übergabe Ingame abgeschlossen", inline: false }
                     ],
-                    footer: { text: "MixelObi.de Automatisches Logistik-System v4", icon_url: "https://i.imgur.com/wHddv9B.png" },
+                    footer: { text: "MixelObi.de Automatisches Logistik-System v4.1", icon_url: "https://i.imgur.com/wHddv9B.png" },
                     timestamp: new Date()
                 }]
             };
@@ -456,7 +437,6 @@
                     totalRevenue += sum;
                     logAction(`[BERECHNUNG] Bestellung von ${name} erfolgreich! Umsatz +${sum} M.`);
                     
-                    // Ingame Rechnungsbefehl generieren
                     let cmdBox = document.getElementById('ingameInvoiceBox');
                     cmdBox.style.display = "block";
                     cmdBox.innerText = `/msg ${name} Hallo! Deine OBI-Möbelbestellung im Wert von ${sum} Münzen ist fertig verpackt und liegt am Plot bereit!`;
@@ -467,7 +447,7 @@
                     alert("🚀 Giga-Erfolg! Bestellung an Discord übermittelt!");
                 });
             } else {
-                alert(`Simulation aktiv (Kein valider Webhook): ${name} kauft für ${sum} M.`);
+                alert(`Simulation aktiv (Kein Webhook eingetragen): ${name} kauft für ${sum} M.`);
                 totalRevenue += sum;
                 saveToStorage();
                 shoppingCart = [];
@@ -476,17 +456,16 @@
             }
         }
 
-        // HILFSFUNKTIONEN & SYSTEM TRICKS
         function copyInvoiceToClipboard() {
             let text = document.getElementById('ingameInvoiceBox').innerText;
             navigator.clipboard.writeText(text);
-            alert("📋 Ingame-Befehl kopiert! Du kannst ihn jetzt direkt mit STRG+V in den Minecraft-Chat einfügen.");
+            alert("📋 Ingame-Befehl kopiert!");
         }
 
         function logAction(msg) {
             let log = document.getElementById('adminSystemLog');
             let time = new Date().toLocaleTimeString('de-DE');
-            log.innerHTML = `[${time}] ${msg}<br>` + log.innerHTML;
+            if(log) log.innerHTML = `[${time}] ${msg}<br>` + log.innerHTML;
         }
 
         function playAlertSound() {
@@ -494,7 +473,7 @@
                 let context = new (window.AudioContext || window.webkitAudioContext)();
                 let osc = context.createOscillator();
                 osc.type = "sine";
-                osc.frequency.setValueAtTime(587.33, context.currentTime); // D5 Note
+                osc.frequency.setValueAtTime(587.33, context.currentTime);
                 osc.connect(context.destination);
                 osc.start();
                 osc.stop(context.currentTime + 0.3);
@@ -537,12 +516,11 @@
         }
 
         function wipeDatabase() {
-            if(confirm("Bist du dir absolut sicher? Damit löschst du alle deine Items unwiderruflich!")) {
+            if(confirm("Alle Items löschen?")) {
                 itemDatabase = [];
                 totalRevenue = 0;
                 saveToStorage();
                 drawUI();
-                logAction("[ACHTUNG] Datenbank wurde komplett gewischt.");
             }
         }
 
@@ -554,7 +532,6 @@
             ];
             saveToStorage();
             drawUI();
-            logAction("[SYSTEM] Demo-Möbel geladen.");
         }
 
         window.onload = function() {
