@@ -120,7 +120,7 @@
 
         <div>
             <div class="panel panel-admin" id="xxlAdminPanel">
-                <div class="panel-title" style="color:var(--admin-color)">👑 OBI ULTRA-KONTROLLZENTRUM v4.2 (ADMINISTRATOR)</div>
+                <div class="panel-title" style="color:var(--admin-color)">👑 OBI ULTRA-KONTROLLZENTRUM v4.3 (ADMINISTRATOR)</div>
                 
                 <div class="metrics-grid">
                     <div class="metric-card"><span>Umsatz Gesamt</span><strong id="statUmsatz" style="color:var(--success)">0 M.</strong></div>
@@ -183,7 +183,7 @@
 
                 <strong>📜 System-Log & Kassenabrechnung:</strong>
                 <div class="log-box" id="adminSystemLog" style="margin-top:5px; margin-bottom:15px;">
-                    [SYSTEM] OBI v4.2 erfolgreich initialisiert. Discord-Sicherheitsbrücke aktiv.
+                    [SYSTEM] OBI v4.3 erfolgreich initialisiert. Discord-Sicherheitsbrücke aktiv.
                 </div>
 
                 <div style="display:flex; gap:10px;">
@@ -260,6 +260,7 @@
 
                     let finalPrice = Math.round(item.price * globalDiscount);
 
+                    // Die Eingabefelder (admin-edit-field) passen sich jetzt strikt dem "isChefMode" an!
                     grid.innerHTML += `
                         <div class="card cat-${item.cat}" data-name="${item.name.toLowerCase()}">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -270,13 +271,13 @@
                             <div class="card-stats">
                                 <div class="stat-row">
                                     <span>Verkaufspreis:</span>
-                                    <strong class="price-tag" style="color:var(--obi-orange); font-weight:800;">${finalPrice} M.</strong>
-                                    <input type="number" class="admin-edit-field" value="${item.price}" onchange="updateDbValue(${item.id}, 'price', this.value)">
+                                    <strong class="price-tag" style="color:var(--obi-orange); font-weight:800; display: ${isChefMode ? 'none' : 'block'};">${finalPrice} M.</strong>
+                                    <input type="number" class="admin-edit-field" style="display: ${isChefMode ? 'block' : 'none'};" value="${item.price}" onchange="updateDbValue(${item.id}, 'price', this.value)">
                                 </div>
                                 <div class="stat-row">
                                     <span>Lagerbestand:</span>
-                                    <strong class="stock-tag">${item.stock}</strong>
-                                    <input type="number" class="admin-edit-field" value="${item.stock}" onchange="updateDbValue(${item.id}, 'stock', this.value)">
+                                    <strong class="stock-tag" style="display: ${isChefMode ? 'none' : 'block'};">${item.stock}</strong>
+                                    <input type="number" class="admin-edit-field" style="display: ${isChefMode ? 'block' : 'none'};" value="${item.stock}" onchange="updateDbValue(${item.id}, 'stock', this.value)">
                                 </div>
                             </div>
 
@@ -294,7 +295,6 @@
             }
 
             updateMetrics();
-            if (isChefMode) showAdminControls();
         }
 
         function updateMetrics() {
@@ -313,6 +313,7 @@
         }
 
         function addNewItemToDatabase() {
+            if(!isChefMode) return; // Schutzbarriere
             let name = document.getElementById('addName').value.trim();
             let cat = document.getElementById('addCat').value;
             let price = parseInt(document.getElementById('addPrice').value) || 0;
@@ -334,6 +335,7 @@
         }
 
         function updateDbValue(id, field, value) {
+            if(!isChefMode) return; // Schutzbarriere
             let item = itemDatabase.find(x => x.id === id);
             if(item) {
                 item[field] = parseInt(value) || 0;
@@ -343,12 +345,14 @@
         }
 
         function deleteItem(id) {
+            if(!isChefMode) return;
             itemDatabase = itemDatabase.filter(x => x.id !== id);
             saveToStorage();
             drawUI();
         }
 
         function setMarketStatus(status) {
+            if(!isChefMode) return;
             isMarketOpen = status;
             logAction(`[STATUS] Markt-Status geändert auf: ${status ? 'GEÖFFNET' : 'GESCHLOSSEN'}`);
             saveToStorage();
@@ -356,6 +360,7 @@
         }
 
         function changeGlobalDiscount(val) {
+            if(!isChefMode) return;
             globalDiscount = parseFloat(val);
             logAction(`[RABATT] Globaler Multiplikator auf ${val}x gesetzt.`);
             drawUI();
@@ -402,7 +407,6 @@
             let name = document.getElementById('playerName').value.trim();
             let time = document.getElementById('deliveryTime').value.trim();
             
-            // Holt sich die Daten jetzt EXKLUSIV aus den geschützten Admin-Feldern
             let url = document.getElementById('discWebhook').value.trim();
             let mentionId = document.getElementById('discMentionId').value.trim();
 
@@ -427,7 +431,7 @@
                         { name: "💰 Gesamt-Rechnungsbetrag", value: `### 💵 ${sum.toLocaleString('de-DE')} Münzen`, inline: false },
                         { name: "🛠️ Status für Mitarbeiter", value: "⬜ Packliste kontrolliert\n⬜ Kisten auf Plot bereitgestellt\n⬜ Übergabe Ingame abgeschlossen", inline: false }
                     ],
-                    footer: { text: "MixelObi.de Automatisches Logistik-System v4.2", icon_url: "https://i.imgur.com/wHddv9B.png" },
+                    footer: { text: "MixelObi.de Automatisches Logistik-System v4.3", icon_url: "https://i.imgur.com/wHddv9B.png" },
                     timestamp: new Date()
                 }]
             };
@@ -488,18 +492,15 @@
                 if (pw === MASTER_ADMIN_KEY) {
                     isChefMode = true;
                     document.getElementById('xxlAdminPanel').style.display = 'block';
-                    showAdminControls();
+                    drawUI(); // Zeichnet Karten mit aktiven Eingabefeldern neu
+                } else {
+                    alert("Falsches Passwort!");
                 }
             } else {
                 isChefMode = false;
                 document.getElementById('xxlAdminPanel').style.display = 'none';
-                drawUI();
+                drawUI(); // Schließt Adminfelder und zeigt wieder normalen Text
             }
-        }
-
-        function showAdminControls() {
-            document.querySelectorAll('.admin-edit-field').forEach(x => x.style.display = 'block');
-            document.querySelectorAll('.price-tag, .stock-tag').forEach(x => x.style.display = 'none');
         }
 
         function setFilter(cat) {
@@ -518,6 +519,7 @@
         }
 
         function wipeDatabase() {
+            if(!isChefMode) return;
             if(confirm("Alle Items löschen?")) {
                 itemDatabase = [];
                 totalRevenue = 0;
@@ -527,6 +529,7 @@
         }
 
         function loadDemoItems() {
+            if(!isChefMode) return;
             itemDatabase = [
                 { id: 991, name: "Premium Leder-Sofa", cat: "moebel", price: 450, stock: 12, unit: "Stk" },
                 { id: 992, name: "Design Küchen-Theke", cat: "sanitaer", price: 890, stock: 5, unit: "Stk" },
@@ -542,9 +545,12 @@
             drawUI();
         };
 
-        // Speichert Änderungen nur noch direkt über die geschützten Admin-Felder ab
-        document.getElementById('discWebhook').addEventListener('input', (e) => localStorage.setItem('obi_v4_webhook', e.target.value.trim()));
-        document.getElementById('discMentionId').addEventListener('input', (e) => localStorage.setItem('obi_v4_mention', e.target.value.trim()));
+        document.getElementById('discWebhook').addEventListener('input', (e) => {
+            if(isChefMode) localStorage.setItem('obi_v4_webhook', e.target.value.trim());
+        });
+        document.getElementById('discMentionId').addEventListener('input', (e) => {
+            if(isChefMode) localStorage.setItem('obi_v4_mention', e.target.value.trim());
+        });
     </script>
 </body>
 </html>
